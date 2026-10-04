@@ -5,6 +5,7 @@ import {
   Briefcase,
   Users2,
   Image,
+  BookOpen,
   TrendingUp,
   ArrowUpRight,
   RefreshCw,
@@ -111,6 +112,7 @@ export default function Dashboard() {
     services: 0,
     teamMembers: 0,
     heroBanners: 0,
+    blogs: 0,
   })
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -121,17 +123,19 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [projects, services, team, banners] = await Promise.allSettled([
-          api.get('/projects'),
+        const [projects, services, team, banners, blogs] = await Promise.allSettled([
+          api.get('/projects', { params: { all: true } }),
           api.get('/services'),
           api.get('/team-members'),
           api.get('/hero-banners'),
+          api.get('/blogs', { params: { all: true } }),
         ])
         setStats({
           projects: projects.status === 'fulfilled' ? (projects.value.data?.data?.length ?? projects.value.data?.length ?? 0) : 0,
           services: services.status === 'fulfilled' ? (services.value.data?.data?.length ?? services.value.data?.length ?? 0) : 0,
           teamMembers: team.status === 'fulfilled' ? (team.value.data?.data?.length ?? team.value.data?.length ?? 0) : 0,
           heroBanners: banners.status === 'fulfilled' ? (banners.value.data?.data?.length ?? banners.value.data?.length ?? 0) : 0,
+          blogs: blogs.status === 'fulfilled' ? (blogs.value.data?.data?.length ?? blogs.value.data?.length ?? 0) : 0,
         })
       } catch (err) {
         console.error('Failed to load dashboard stats', err)
@@ -147,14 +151,14 @@ export default function Dashboard() {
       title: 'Total Proyek',
       value: loading ? '...' : stats.projects,
       icon: FolderKanban,
-      sub: '+3 dari bulan lalu',
+      sub: 'Portofolio arsitektur',
       link: '/projects',
     },
     {
       title: 'Layanan Aktif',
       value: loading ? '...' : stats.services,
       icon: Briefcase,
-      sub: '+1.2% dari bulan lalu',
+      sub: 'Layanan ditawarkan',
       link: '/services',
     },
     {
@@ -168,8 +172,15 @@ export default function Dashboard() {
       title: 'Hero Banners',
       value: loading ? '...' : stats.heroBanners,
       icon: Image,
-      sub: 'Promosi & headline aktif',
+      sub: 'Slider headline aktif',
       link: '/hero-banners',
+    },
+    {
+      title: 'Artikel Blog',
+      value: loading ? '...' : stats.blogs,
+      icon: BookOpen,
+      sub: 'Publikasi wawasan',
+      link: '/blogs',
     },
   ]
 
@@ -180,7 +191,7 @@ export default function Dashboard() {
     <div className="space-y-5">
 
       {/* ── TOP STAT CARDS ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {statCards.map((card) => {
           const Icon = card.icon
           return (

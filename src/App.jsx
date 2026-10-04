@@ -11,6 +11,7 @@ import Services from '@/pages/content/Services'
 import ProjectCategories from '@/pages/content/ProjectCategories'
 import Projects from '@/pages/content/Projects'
 import TeamMembers from '@/pages/content/TeamMembers'
+import Blogs from '@/pages/content/Blogs'
 import Users from '@/pages/users/Users'
 import Settings from '@/pages/Settings'
 
@@ -31,6 +32,7 @@ function App() {
               <Route path="/project-categories" element={<ProjectCategories />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/team-members" element={<TeamMembers />} />
+              <Route path="/blogs" element={<Blogs />} />
               <Route path="/users" element={<Users />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
