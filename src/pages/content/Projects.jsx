@@ -1173,7 +1173,17 @@ export default function Projects() {
                 <Input placeholder="Misal: 2026" value={formYear} onChange={(e) => setFormYear(e.target.value)} />
               </div>
 
-              <div className="flex items-center gap-2 pt-6">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Luas Tanah (m²)</label>
+                <Input placeholder="Misal: 500" value={formLandArea} onChange={(e) => setFormLandArea(e.target.value)} />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Luas Bangunan (m²)</label>
+                <Input placeholder="Misal: 350" value={formBuildingArea} onChange={(e) => setFormBuildingArea(e.target.value)} />
+              </div>
+
+              <div className="flex items-center gap-2 pt-6 sm:col-span-2">
                 <input
                   type="checkbox"
                   id="featured-check"
@@ -1192,6 +1202,17 @@ export default function Projects() {
                   placeholder="Ringkasan 1-2 kalimat untuk kartu proyek"
                   value={formShortDescription}
                   onChange={(e) => setFormShortDescription(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-xs font-semibold text-foreground">Deskripsi Lengkap</label>
+                <textarea
+                  placeholder="Deskripsi detail rancangan proyek, filosofi, material, dan tata ruang..."
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  rows={4}
+                  className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 />
               </div>
 
@@ -1290,7 +1311,17 @@ export default function Projects() {
                 <Input value={formYear} onChange={(e) => setFormYear(e.target.value)} />
               </div>
 
-              <div className="flex items-center gap-2 pt-6">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Luas Tanah (m²)</label>
+                <Input placeholder="Misal: 500" value={formLandArea} onChange={(e) => setFormLandArea(e.target.value)} />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Luas Bangunan (m²)</label>
+                <Input placeholder="Misal: 350" value={formBuildingArea} onChange={(e) => setFormBuildingArea(e.target.value)} />
+              </div>
+
+              <div className="flex items-center gap-2 pt-6 sm:col-span-2">
                 <input
                   type="checkbox"
                   id="featured-check-edit"
@@ -1316,8 +1347,8 @@ export default function Projects() {
                 <textarea
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
-                  rows={3}
-                  className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  rows={4}
+                  className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 />
               </div>
 
