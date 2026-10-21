@@ -10,8 +10,10 @@ import HeroBanners from '@/pages/content/HeroBanners'
 import Services from '@/pages/content/Services'
 import ProjectCategories from '@/pages/content/ProjectCategories'
 import Projects from '@/pages/content/Projects'
+import Customers from '@/pages/content/Customers'
 import TeamMembers from '@/pages/content/TeamMembers'
 import Blogs from '@/pages/content/Blogs'
+import SiteStats from '@/pages/content/SiteStats'
 import Users from '@/pages/users/Users'
 import Settings from '@/pages/Settings'
 
@@ -31,8 +33,10 @@ function App() {
               <Route path="/services" element={<Services />} />
               <Route path="/project-categories" element={<ProjectCategories />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/customers" element={<Customers />} />
               <Route path="/team-members" element={<TeamMembers />} />
               <Route path="/blogs" element={<Blogs />} />
+              <Route path="/site-stats" element={<SiteStats />} />
               <Route path="/users" element={<Users />} />
               <Route path="/settings" element={<Settings />} />
             </Route>

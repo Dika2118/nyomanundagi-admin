@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Plus,
   Search,
   FolderKanban,
+  Contact2,
   Edit2,
   Trash2,
   Star,
@@ -47,6 +49,7 @@ import api from '@/api/axios'
 export default function Projects() {
   const [projects, setProjects] = useState([])
   const [categories, setCategories] = useState([])
+  const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -81,6 +84,7 @@ export default function Projects() {
   // Form states
   const [formTitle, setFormTitle] = useState('')
   const [formCategoryId, setFormCategoryId] = useState('')
+  const [formCustomerId, setFormCustomerId] = useState('')
   const [formClient, setFormClient] = useState('')
   const [formLocation, setFormLocation] = useState('')
   const [formYear, setFormYear] = useState('')
@@ -106,6 +110,16 @@ export default function Projects() {
       setCategories(res.data?.data || res.data || [])
     } catch (err) {
       console.error('Failed to load categories', err)
+    }
+  }
+
+  // Fetch customers for project assignment
+  const fetchCustomers = async () => {
+    try {
+      const res = await api.get('/customers', { params: { all: true } })
+      setCustomers(res.data?.data || res.data || [])
+    } catch (err) {
+      console.error('Failed to load customers', err)
     }
   }
 
@@ -144,6 +158,7 @@ export default function Projects() {
 
   useEffect(() => {
     fetchCategories()
+    fetchCustomers()
   }, [])
 
   // Debounced search & filter to backend
@@ -179,6 +194,7 @@ export default function Projects() {
   const resetForm = () => {
     setFormTitle('')
     setFormCategoryId('')
+    setFormCustomerId('')
     setFormClient('')
     setFormLocation('')
     setFormYear(new Date().getFullYear().toString())
@@ -206,7 +222,8 @@ export default function Projects() {
     setActiveProject(project)
     setFormTitle(project.title || '')
     setFormCategoryId(project.category_id ? String(project.category_id) : '')
-    setFormClient(project.client_name || '')
+    setFormCustomerId(project.customer_id ? String(project.customer_id) : '')
+    setFormClient(project.client_name || project.customer?.name || '')
     setFormLocation(project.location || '')
     setFormYear(project.year || '')
     setFormLandArea(project.land_area || '')
@@ -343,6 +360,7 @@ export default function Projects() {
       const formData = new FormData()
       formData.append('title', formTitle.trim())
       if (formCategoryId) formData.append('category_id', formCategoryId)
+      if (formCustomerId) formData.append('customer_id', formCustomerId)
       if (formClient.trim()) formData.append('client_name', formClient.trim())
       if (formLocation.trim()) formData.append('location', formLocation.trim())
       if (formYear.trim()) formData.append('year', formYear.trim())
@@ -392,6 +410,7 @@ export default function Projects() {
         formData.append('_method', 'PUT')
         formData.append('title', formTitle.trim())
         if (formCategoryId) formData.append('category_id', formCategoryId)
+        if (formCustomerId) formData.append('customer_id', formCustomerId)
         if (formClient.trim()) formData.append('client_name', formClient.trim())
         if (formLocation.trim()) formData.append('location', formLocation.trim())
         if (formYear.trim()) formData.append('year', formYear.trim())
@@ -408,6 +427,7 @@ export default function Projects() {
         await api.put(`/projects/${activeProject.id}`, {
           title: formTitle.trim(),
           category_id: formCategoryId ? parseInt(formCategoryId, 10) : null,
+          customer_id: formCustomerId ? parseInt(formCustomerId, 10) : null,
           client_name: formClient.trim() || null,
           location: formLocation.trim() || null,
           year: formYear.trim() || null,
@@ -642,7 +662,20 @@ export default function Projects() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-xs text-muted-foreground">
-                          <div>{project.client_name || '-'}</div>
+                          <div className="font-medium text-foreground">
+                            {project.customer ? (
+                              <Link
+                                to="/customers"
+                                className="inline-flex items-center gap-1 text-primary hover:underline"
+                                title="Lihat profil customer"
+                              >
+                                <Contact2 className="h-3 w-3 shrink-0" />
+                                <span className="truncate">{project.customer.name}</span>
+                              </Link>
+                            ) : (
+                              project.client_name || '-'
+                            )}
+                          </div>
                           <div className="text-[11px]">{project.location || '-'}</div>
                         </td>
                         <td className="px-4 py-3 text-xs font-mono">{project.year || '-'}</td>
@@ -786,7 +819,20 @@ export default function Projects() {
                     <span className="text-muted-foreground flex items-center gap-1">
                       <User className="h-3.5 w-3.5 text-primary" /> Klien
                     </span>
-                    <p className="font-semibold text-foreground text-sm">{detailProject.client_name || '-'}</p>
+                    <p className="font-semibold text-foreground text-sm">
+                      {detailProject.customer ? (
+                        <Link
+                          to="/customers"
+                          className="text-primary hover:underline inline-flex items-center gap-1"
+                          title="Buka data customer"
+                        >
+                          <Contact2 className="h-3 w-3" />
+                          <span>{detailProject.customer.name}</span>
+                        </Link>
+                      ) : (
+                        detailProject.client_name || '-'
+                      )}
+                    </p>
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-muted-foreground flex items-center gap-1">
@@ -1158,9 +1204,59 @@ export default function Projects() {
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">Nama Klien</label>
-                <Input placeholder="Misal: Bapak Wayan" value={formClient} onChange={(e) => setFormClient(e.target.value)} />
+              <div className="space-y-1.5 sm:col-span-2 p-3 rounded-lg border border-border/70 bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Contact2 className="h-3.5 w-3.5 text-primary" />
+                    <span>Customer / Klien</span>
+                  </label>
+                  <Link
+                    to="/customers"
+                    target="_blank"
+                    className="text-[11px] text-primary hover:underline flex items-center gap-0.5 font-medium"
+                  >
+                    <span>+ Kelola Database Customer</span>
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Pilih dari Database Klien</label>
+                    <select
+                      value={formCustomerId}
+                      onChange={(e) => {
+                        const val = e.target.value
+                        setFormCustomerId(val)
+                        if (val) {
+                          const selectedCust = customers.find((c) => String(c.id) === String(val))
+                          if (selectedCust) {
+                            setFormClient(selectedCust.name)
+                            if (selectedCust.city && !formLocation) {
+                              setFormLocation(selectedCust.city)
+                            }
+                          }
+                        }
+                      }}
+                      className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                    >
+                      <option value="">-- Klien Baru / Klien Lepas --</option>
+                      {customers.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} {c.company_name ? `(${c.company_name})` : ''} - {c.city || 'Bali'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Nama Klien / Display</label>
+                    <Input
+                      placeholder="Misal: Bapak Wayan"
+                      value={formClient}
+                      onChange={(e) => setFormClient(e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1.5">
@@ -1296,9 +1392,59 @@ export default function Projects() {
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">Nama Klien</label>
-                <Input value={formClient} onChange={(e) => setFormClient(e.target.value)} />
+              <div className="space-y-1.5 sm:col-span-2 p-3 rounded-lg border border-border/70 bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Contact2 className="h-3.5 w-3.5 text-primary" />
+                    <span>Customer / Klien</span>
+                  </label>
+                  <Link
+                    to="/customers"
+                    target="_blank"
+                    className="text-[11px] text-primary hover:underline flex items-center gap-0.5 font-medium"
+                  >
+                    <span>+ Kelola Database Customer</span>
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Pilih dari Database Klien</label>
+                    <select
+                      value={formCustomerId}
+                      onChange={(e) => {
+                        const val = e.target.value
+                        setFormCustomerId(val)
+                        if (val) {
+                          const selectedCust = customers.find((c) => String(c.id) === String(val))
+                          if (selectedCust) {
+                            setFormClient(selectedCust.name)
+                            if (selectedCust.city && !formLocation) {
+                              setFormLocation(selectedCust.city)
+                            }
+                          }
+                        }
+                      }}
+                      className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                    >
+                      <option value="">-- Klien Baru / Klien Lepas --</option>
+                      {customers.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} {c.company_name ? `(${c.company_name})` : ''} - {c.city || 'Bali'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Nama Klien / Display</label>
+                    <Input
+                      placeholder="Misal: Bapak Wayan"
+                      value={formClient}
+                      onChange={(e) => setFormClient(e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1.5">
