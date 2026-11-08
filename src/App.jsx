@@ -14,6 +14,7 @@ import Customers from '@/pages/content/Customers'
 import TeamMembers from '@/pages/content/TeamMembers'
 import Blogs from '@/pages/content/Blogs'
 import SiteStats from '@/pages/content/SiteStats'
+import PrivacyPolicy from '@/pages/content/PrivacyPolicy'
 import Users from '@/pages/users/Users'
 import Settings from '@/pages/Settings'
 
@@ -37,6 +38,7 @@ function App() {
               <Route path="/team-members" element={<TeamMembers />} />
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/site-stats" element={<SiteStats />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/users" element={<Users />} />
               <Route path="/settings" element={<Settings />} />
             </Route>

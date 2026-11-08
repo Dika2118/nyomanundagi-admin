@@ -12,6 +12,7 @@ import {
   UserCog,
   Settings,
   LogOut,
+  ShieldCheck,
 } from 'lucide-react'
 
 import {
@@ -84,6 +85,11 @@ const navigationItems = [
         title: 'Statistik Website',
         url: '/site-stats',
         icon: BarChart3,
+      },
+      {
+        title: 'Kebijakan Privasi',
+        url: '/privacy-policy',
+        icon: ShieldCheck,
       },
     ],
   },
